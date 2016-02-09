@@ -8,7 +8,7 @@ module ReginaEx
     end
 
     def evaluate(regex)
-      if regex.match @to_match
+      if regex.match(@text).to_s == @to_match
         Result::Success.new(@to_match)
       else
         Result::Failure.new(@to_match)
