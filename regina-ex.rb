@@ -120,9 +120,14 @@ levels = [
     ReginaEx::Challenge.new("Proceed!", "Proceed!")
   ]),
   ReginaEx::Level.new('Match the words beginning with a capital letter.', [
-    ReginaEx::Challenge.new('One two three', 'One'),
-    ReginaEx::Challenge.new('one Two three', 'Two'),
-    ReginaEx::Challenge.new('one two Three', 'Three'),
+    ReginaEx::Challenge.new('One twO thRee', 'One'),
+    ReginaEx::Challenge.new('oNe Two threE', 'Two'),
+    ReginaEx::Challenge.new('onE two Three', 'Three'),
+  ]),
+  ReginaEx::Level.new('Match the continuous digits.', [
+    ReginaEx::Challenge.new('aaaa1111aaaa', '1111'),
+    ReginaEx::Challenge.new('aaa111aaa', '111'),
+    ReginaEx::Challenge.new('aa11aa', '11'),
   ]),
 ]
 
