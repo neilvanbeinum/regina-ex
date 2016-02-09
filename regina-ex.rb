@@ -92,15 +92,11 @@ def start_main_game_loop(levels)
 
     answer_regex = Regexp.new(eval(answer))
 
-    puts answer_regex
-
     result = level.attempt(answer_regex)
 
     puts "\n"
     puts result.challenge_result_text
     puts "\n"
-
-    puts result.successful?
 
     if result.successful?
       unless levels.empty?
