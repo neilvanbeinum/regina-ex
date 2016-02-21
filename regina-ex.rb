@@ -68,47 +68,59 @@ module ReginaEx
       @challenge_results.any? { |challenge_result| challenge_result.instance_of?(Challenge::Result::Success) }
     end
   end
-end
 
+  class Game
+    require 'readline'
 
-def start_main_game_loop(levels)
-  level = levels.shift
+    def self.start_main_game_loop(levels)
+      level = levels.shift
 
-  puts "\n"
-  puts 'WELCOME TO REGINA-EX!'
-  puts "\n"
+      puts "\n"
+      puts 'WELCOME TO REGINA-EX!'
+      puts "\n"
 
-  loop do
-    puts level.introduction_text
-    puts '-' * level.introduction_text.length
-    puts "\n"
+      loop do
+        puts level.introduction_text
+        puts '-' * level.introduction_text.length
+        puts "\n"
 
-    level.challenge_texts.each.with_index(1) { |challenge, i| puts "#{ i }. #{ challenge }" }
+        level.challenge_texts.each.with_index(1) { |challenge, i| puts "#{ i }. #{ challenge }" }
 
-    puts "\n"
+        puts "\n"
 
-    print '> '
-    answer = gets.chomp
+        answer = Readline.readline('> ', true)
 
-    answer_regex = Regexp.new(eval(answer))
+        if answer.downcase == 'exit' || answer.downcase == 'quit'
+          puts 'Bye...  o/'
+          break
+        end
 
-    result = level.attempt(answer_regex)
+        begin
+          answer_regexp = Regexp.new answer
+        rescue RegexpError
+          puts 'Please enter a valid regex'
+          next
+        end
 
-    puts "\n"
-    puts result.challenge_result_text
-    puts "\n"
+        result = level.attempt(answer_regexp)
 
-    if result.successful?
-      unless levels.empty?
-        level = levels.shift
-      else
-        puts "You've completed all the challenges!"
-        break
+        puts "\n"
+        puts result.challenge_result_text
+        puts "\n"
+
+        if result.successful?
+          unless levels.empty?
+            level = levels.shift
+          else
+            puts "You've completed all the challenges!"
+            break
+          end
+        else
+          puts "\n"
+          puts 'Please try again'
+          puts "\n"
+        end
       end
-    else
-      puts "\n"
-      puts 'Please try again'
-      puts "\n"
     end
   end
 end
@@ -136,4 +148,4 @@ levels = [
   ]),
 ]
 
-start_main_game_loop(levels)
+ReginaEx::Game.start_main_game_loop(levels)
