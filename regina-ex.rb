@@ -1,5 +1,5 @@
 module ReginaEx
-  class Challenge
+  class Test
     attr_reader :text, :to_match
 
     def initialize(text, to_match)
@@ -21,7 +21,7 @@ module ReginaEx
           @to_match = to_match
         end
 
-        def text
+        def to_s
           "Did not match #{ @to_match }"
         end
       end
@@ -31,7 +31,7 @@ module ReginaEx
           @to_match = to_match
         end
 
-        def text
+        def to_s
           "Matched #{ @to_match }"
         end
       end
@@ -41,31 +41,31 @@ module ReginaEx
   class Level
     attr_reader :introduction_text
 
-    def initialize(introduction_text, challenges)
+    def initialize(introduction_text, tests)
       @introduction_text = introduction_text
-      @challenges = challenges
+      @tests = tests
     end
 
     def challenge_texts
-      @challenges.each.map(&:text)
+      @tests.each.map(&:text)
     end
 
     def attempt(regex)
-      LevelResult.new(@challenges.map { |challenge| challenge.evaluate(regex) })
+      LevelResult.new(@tests.map { |test| test.evaluate(regex) })
     end
   end
 
   class LevelResult
-    def initialize(challenge_results)
-      @challenge_results = challenge_results
+    def initialize(test_results)
+      @test_results = test_results
     end
 
-    def challenge_result_text
-      @challenge_results.map(&:text)
+    def to_s
+      @test_results.map(&:to_s)
     end
 
     def successful?
-      @challenge_results.any? { |challenge_result| challenge_result.instance_of?(Challenge::Result::Success) }
+      @test_results.any? { |test_result| test_result.instance_of?(Test::Result::Success) }
     end
   end
 
@@ -99,13 +99,14 @@ module ReginaEx
           answer_regexp = Regexp.new answer
         rescue RegexpError
           puts 'Please enter a valid regex'
+          puts "\n"
           next
         end
 
         result = level.attempt(answer_regexp)
 
         puts "\n"
-        puts result.challenge_result_text
+        puts result
         puts "\n"
 
         if result.successful?
@@ -127,24 +128,24 @@ end
 
 levels = [
   ReginaEx::Level.new('Match the whole words.', [
-    ReginaEx::Challenge.new('Embark!', 'Embark!'),
-    ReginaEx::Challenge.new("Let's go!", "Let's go!"),
-    ReginaEx::Challenge.new("Proceed!", "Proceed!")
+    ReginaEx::Test.new('Embark!', 'Embark!'),
+    ReginaEx::Test.new("Let's go!", "Let's go!"),
+    ReginaEx::Test.new("Proceed!", "Proceed!")
   ]),
   ReginaEx::Level.new('Match the words beginning with a capital letter.', [
-    ReginaEx::Challenge.new('One twO thRee', 'One'),
-    ReginaEx::Challenge.new('oNe Two threE', 'Two'),
-    ReginaEx::Challenge.new('onE two Three', 'Three'),
+    ReginaEx::Test.new('One twO thRee', 'One'),
+    ReginaEx::Test.new('oNe Two threE', 'Two'),
+    ReginaEx::Test.new('onE two Three', 'Three'),
   ]),
   ReginaEx::Level.new('Match the continuous digits.', [
-    ReginaEx::Challenge.new('aaaa1111aaaa', '1111'),
-    ReginaEx::Challenge.new('aaa111aaa', '111'),
-    ReginaEx::Challenge.new('aa11aa', '11'),
+    ReginaEx::Test.new('aaaa1111aaaa', '1111'),
+    ReginaEx::Test.new('aaa111aaa', '111'),
+    ReginaEx::Test.new('aa11aa', '11'),
   ]),
   ReginaEx::Level.new("Match the 'a's followed by 'b's", [
-    ReginaEx::Challenge.new('abaaab', 'ab'),
-    ReginaEx::Challenge.new('aaa111aaa', ''),
-    ReginaEx::Challenge.new('aa11aa', ''),
+    ReginaEx::Test.new('abaaab', 'ab'),
+    ReginaEx::Test.new('aaa111aaa', ''),
+    ReginaEx::Test.new('aa11aa', ''),
   ]),
 ]
 
