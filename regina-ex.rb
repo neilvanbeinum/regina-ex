@@ -1,38 +1,52 @@
+require 'pry-byebug'
+
 module ReginaEx
   class Test
     attr_reader :text, :to_match
 
-    def initialize(text, to_match)
+    def initialize(text, should_match)
       @text = text
-      @to_match = to_match
+      @should_match = should_match
     end
 
     def evaluate(regex)
-      if regex.match(@text).to_s == @to_match
-        Result::Success.new(@to_match)
+      matchdata = regex.match(@text)
+
+      if !!matchdata == @should_match
+        Result::Success.new(@text, @should_match)
       else
-        Result::Failure.new(@to_match)
+        Result::Failure.new(@text, @should_match)
       end
     end
 
     module Result
-      class Failure
-        def initialize(to_match)
-          @to_match = to_match
+      class Success
+        def initialize(text, should_match)
+          @text = text
+          @should_match = should_match
         end
 
         def to_s
-          "Did not match #{ @to_match }"
+          if @should_match
+            "Matched #{ @text }, as required."
+          else
+            "Did not match #{ @text }, as required."
+          end
         end
       end
 
-      class Success
-        def initialize(to_match)
-          @to_match = to_match
+      class Failure
+        def initialize(text, should_match)
+          @text = text
+          @should_match = should_match
         end
 
         def to_s
-          "Matched #{ @to_match }"
+          if @should_match
+            "Did not match #{ @text }, but were meant to."
+          else
+            "Matched #{ @text }, but were not meant to."
+          end
         end
       end
     end
@@ -61,11 +75,11 @@ module ReginaEx
     end
 
     def to_s
-      @test_results.map(&:to_s)
+      @test_results.map(&:to_s).join("\n")
     end
 
     def successful?
-      @test_results.any? { |test_result| test_result.instance_of?(Test::Result::Success) }
+      @test_results.all? { |test_result| test_result.instance_of?(Test::Result::Success) }
     end
   end
 
@@ -83,8 +97,13 @@ module ReginaEx
         puts level.introduction_text
         puts '-' * level.introduction_text.length
         puts "\n"
+        puts "Test strings:"
+        puts "\n"
 
-        level.challenge_texts.each.with_index(1) { |challenge, i| puts "#{ i }. #{ challenge }" }
+        level.challenge_texts.each { |challenge, i|
+          challenge = /\A\s*\z/ =~ challenge ? "\"#{ challenge }\"" : challenge
+          puts "*   #{ challenge }"
+        }
 
         puts "\n"
 
@@ -127,25 +146,33 @@ module ReginaEx
 end
 
 levels = [
-  ReginaEx::Level.new('Match the whole words.', [
-    ReginaEx::Test.new('Embark!', 'Embark!'),
-    ReginaEx::Test.new("Let's go!", "Let's go!"),
-    ReginaEx::Test.new("Proceed!", "Proceed!")
+  ReginaEx::Level.new('Match any strings containing a single character.', [
+    ReginaEx::Test.new('Embark!', true),
+    ReginaEx::Test.new("Let's go!", true),
+    ReginaEx::Test.new("Proceed!", true),
+    ReginaEx::Test.new("", false),
   ]),
-  ReginaEx::Level.new('Match the words beginning with a capital letter.', [
-    ReginaEx::Test.new('One twO thRee', 'One'),
-    ReginaEx::Test.new('oNe Two threE', 'Two'),
-    ReginaEx::Test.new('onE two Three', 'Three'),
+  ReginaEx::Level.new('Match words beginning with a capital letter.', [
+    ReginaEx::Test.new('One', true),
+    ReginaEx::Test.new('oNe', false),
+    ReginaEx::Test.new('twO', false),
+    ReginaEx::Test.new('three', false),
+    ReginaEx::Test.new('Three', true),
   ]),
-  ReginaEx::Level.new('Match the continuous digits.', [
-    ReginaEx::Test.new('aaaa1111aaaa', '1111'),
-    ReginaEx::Test.new('aaa111aaa', '111'),
-    ReginaEx::Test.new('aa11aa', '11'),
+  ReginaEx::Level.new('Match strings ending in one or more digits.', [
+    ReginaEx::Test.new('aaaaa', false),
+    ReginaEx::Test.new('aaaa45', true),
+    ReginaEx::Test.new('     ', false),
+    ReginaEx::Test.new('234234', true),
+    ReginaEx::Test.new('a', false),
   ]),
-  ReginaEx::Level.new("Match the 'a's followed by 'b's", [
-    ReginaEx::Test.new('abaaab', 'ab'),
-    ReginaEx::Test.new('aaa111aaa', ''),
-    ReginaEx::Test.new('aa11aa', ''),
+  ReginaEx::Level.new("Match words containing either one 'a' or one 'b'.", [
+    ReginaEx::Test.new('ab', true),
+    ReginaEx::Test.new('a', true),
+    ReginaEx::Test.new('bbbbb', false),
+    ReginaEx::Test.new('shrub', true),
+    ReginaEx::Test.new('acorn', true),
+    ReginaEx::Test.new('345', false),
   ]),
 ]
 
