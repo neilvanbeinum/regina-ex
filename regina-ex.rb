@@ -129,6 +129,11 @@ levels = [
     ReginaEx::Challenge.new('aaa111aaa', '111'),
     ReginaEx::Challenge.new('aa11aa', '11'),
   ]),
+  ReginaEx::Level.new("Match the 'a's followed by 'b's", [
+    ReginaEx::Challenge.new('abaaab', 'ab'),
+    ReginaEx::Challenge.new('aaa111aaa', ''),
+    ReginaEx::Challenge.new('aa11aa', ''),
+  ]),
 ]
 
 start_main_game_loop(levels)
