@@ -91,6 +91,8 @@ module ReginaEx
 
       puts "\n"
       puts 'WELCOME TO REGINA-EX!'
+      puts "THE ***CRAAZY*** STRING MATCHING GAME EVERYONE'S TALKING ABOUT!"
+      puts "Let's get started with those crazy strings shall we?"
       puts "\n"
 
       loop do
@@ -152,19 +154,68 @@ levels = [
     ReginaEx::Test.new("Proceed!", true),
     ReginaEx::Test.new("", false),
   ]),
-  ReginaEx::Level.new('Match words beginning with a capital letter.', [
+  ReginaEx::Level.new('Match words with 5 or more non-whitespace characters.', [
+    ReginaEx::Test.new('london', true),
+    ReginaEx::Test.new("cap", false),
+    ReginaEx::Test.new("cedar", true),
+    ReginaEx::Test.new("a b c", false),
+    ReginaEx::Test.new("", false),
+  ]),
+  ReginaEx::Level.new('Match strings containing any digits', [
+    ReginaEx::Test.new('yo', false),
+    ReginaEx::Test.new('Call 999', true),
+    ReginaEx::Test.new('8-)', true),
+    ReginaEx::Test.new('zzzzzzzzz', false),
+  ]),
+  ReginaEx::Level.new('Match any strings containing two consecutive lower-case vowels.', [
+    ReginaEx::Test.new('bear', true),
+    ReginaEx::Test.new("ribena", false),
+    ReginaEx::Test.new("cheese", true),
+    ReginaEx::Test.new("bread", true),
+    ReginaEx::Test.new("CHEESE", false),
+  ]),
+  ReginaEx::Level.new('Match any strings containing two of the same consecutive lower-case vowels.', [
+    ReginaEx::Test.new('boot', true),
+    ReginaEx::Test.new("ribena", false),
+    ReginaEx::Test.new("cheese", true),
+    ReginaEx::Test.new("bread", false),
+    ReginaEx::Test.new("bear", false),
+    ReginaEx::Test.new("CHEESE", false),
+  ]),
+  ReginaEx::Level.new('Match words beginning with a capital letter. (\b anchors the pattern at a word boundary)', [
     ReginaEx::Test.new('One', true),
     ReginaEx::Test.new('oNe', false),
     ReginaEx::Test.new('twO', false),
     ReginaEx::Test.new('three', false),
     ReginaEx::Test.new('Three', true),
   ]),
+  ReginaEx::Level.new("Match any strings that do not contain the letter 'y'", [
+    ReginaEx::Test.new('yoghurt', false),
+    ReginaEx::Test.new('yacht', false),
+    ReginaEx::Test.new('hello', true),
+    ReginaEx::Test.new('harhar', true),
+  ]),
   ReginaEx::Level.new('Match strings ending in one or more digits.', [
-    ReginaEx::Test.new('aaaaa', false),
+    ReginaEx::Test.new('4aaaa', false),
     ReginaEx::Test.new('aaaa45', true),
     ReginaEx::Test.new('     ', false),
     ReginaEx::Test.new('234234', true),
     ReginaEx::Test.new('a', false),
+  ]),
+  ReginaEx::Level.new('Match strings ending in an exclamation mark or question mark.', [
+    ReginaEx::Test.new('hello', false),
+    ReginaEx::Test.new('hello!', true),
+    ReginaEx::Test.new('hello?', true),
+    ReginaEx::Test.new('one two three four five', false),
+    ReginaEx::Test.new('!', true),
+  ]),
+  ReginaEx::Level.new('Match strings with non-whitespace characters wrapped in 3 asterisks (*).', [
+    ReginaEx::Test.new('     ***aaaaa***', true),
+    ReginaEx::Test.new('**ARGH**', false),
+    ReginaEx::Test.new('     ', false),
+    ReginaEx::Test.new('hello', false),
+    ReginaEx::Test.new('***hello***', true),
+    ReginaEx::Test.new('********', false),
   ]),
   ReginaEx::Level.new("Match words containing either one 'a' or one 'b'.", [
     ReginaEx::Test.new('ab', true),
