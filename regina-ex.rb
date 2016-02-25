@@ -1,5 +1,3 @@
-require 'pry-byebug'
-
 module ReginaEx
   class Test
     attr_reader :text, :to_match
